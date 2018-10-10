@@ -1,13 +1,13 @@
-module Datastructures.Queue where
+module Datastructures.Queue exposing (..)
 
-{-| This Module implements a simple LIFO queue 
+{-| This Module implements a simple LIFO queue
 
 # Definition
 @docs Queue
 
-This is based on the 
+This is based on the
 
-# Fundamentals 
+# Fundamentals
 @docs init, enqueue, dequeue, length
 
 # Usefull functions
@@ -15,76 +15,90 @@ This is based on the
 
 -}
 
+
 {-| a simple queue.
 -}
-type alias Queue a = (List a, List a)
+type alias Queue a =
+    ( List a, List a )
 
-{-| Creates an empty queue -}
-                   
+
+{-| Creates an empty queue
+-}
 init : Queue a
-init = ([], [])
+init =
+    ( [], [] )
 
 
-{-|Enqueue an element on a queue -}
-enqueue :  a -> Queue a -> Queue a
-enqueue a (inqueue, outqueue) =
-  ((a::inqueue), outqueue)
-
-{-|Dequeues an element of the end of a queue, and also returns thel
-element -}
-
-dequeue : Queue a -> (Maybe a, Queue a)
-dequeue (inqueue,outqueue) =
-  case outqueue of
-    [] ->
-      case inqueue of
-        [] -> (Nothing,(inqueue, outqueue))
-
-        (_::_) -> dequeue([], List.reverse inqueue)
-                   
-    (x::xs) ->
-      (Just x, (inqueue, xs))
+{-| Enqueue an element on a queue
+-}
+enqueue : a -> Queue a -> Queue a
+enqueue a ( inqueue, outqueue ) =
+    ( (a :: inqueue), outqueue )
 
 
-{-| Get the length(number of elements) in the queue -}
+{-| Dequeues an element of the end of a queue, and also returns thel
+element
+-}
+dequeue : Queue a -> ( Maybe a, Queue a )
+dequeue ( inqueue, outqueue ) =
+    case outqueue of
+        [] ->
+            case inqueue of
+                [] ->
+                    ( Nothing, ( inqueue, outqueue ) )
+
+                _ :: _ ->
+                    dequeue ( [], List.reverse inqueue )
+
+        x :: xs ->
+            ( Just x, ( inqueue, xs ) )
+
+
+{-| Get the length(number of elements) in the queue
+-}
 length : Queue a -> Int
-length (inqueue, outqueue) =
-  let
-    inqueue_len  = List.length inqueue
-    outqueue_len = List.length outqueue
-  in
-    inqueue_len + outqueue_len
-  
-{-| Fold across a queue front ot back -}
+length ( inqueue, outqueue ) =
+    let
+        inqueue_len =
+            List.length inqueue
 
-foldr : ( a -> b -> b) -> b -> Queue a -> b
-foldr f acc (inqueue, outqueue) =
-  List.foldl f (List.foldr f acc inqueue) outqueue
+        outqueue_len =
+            List.length outqueue
+    in
+        inqueue_len + outqueue_len
 
-{-| Fold across a queue back ot front -}
 
-foldl : ( a -> b -> b) -> b -> Queue a -> b
-foldl f acc (inqueue, outqueue) =
-  List.foldr f (List.foldl f acc outqueue) inqueue
+{-| Fold across a queue front ot back
+-}
+foldr : (a -> b -> b) -> b -> Queue a -> b
+foldr f acc ( inqueue, outqueue ) =
+    List.foldl f (List.foldr f acc inqueue) outqueue
+
+
+{-| Fold across a queue back ot front
+-}
+foldl : (a -> b -> b) -> b -> Queue a -> b
+foldl f acc ( inqueue, outqueue ) =
+    List.foldr f (List.foldl f acc outqueue) inqueue
 
 
 {-| maps from a queue of type a to a queue containing elements of type
-b -}
-
+b
+-}
 map : (a -> b) -> Queue a -> Queue b
-map f (inqueue, outqueue) =
-  (List.map f inqueue, List.map f outqueue)
+map f ( inqueue, outqueue ) =
+    ( List.map f inqueue, List.map f outqueue )
 
 
-{-| converts a queue into a list  -}
-
+{-| converts a queue into a list
+-}
 fromList : List a -> Queue a
 fromList l =
-  (l, [])
+    ( l, [] )
 
-  
-{-| converts a list into a queue  -}
-  
+
+{-| converts a list into a queue
+-}
 toList : Queue a -> List a
-toList (inqueue, outqueue) =
-  inqueue ++ (List.reverse outqueue)
+toList ( inqueue, outqueue ) =
+    inqueue ++ (List.reverse outqueue)
